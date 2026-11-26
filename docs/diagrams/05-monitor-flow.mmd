@@ -1,0 +1,23 @@
+sequenceDiagram
+  autonumber
+  participant L as Claim ledger
+  participant S as Monitor stats
+  participant W as Portal watcher
+  participant M as LLM explainer
+  participant A as Analyst
+  participant R as Rule table
+  participant N as News board
+
+  Note over S: Runs daily
+  L->>S: Outcomes by payer / code / week
+  S->>S: Detect spike, e.g. Harbor D04 up 3x
+  W->>W: Check official portal for new bulletins
+  S->>M: Spike details + recent claims
+  W->>M: New bulletin text
+  M-->>A: Likely cause + draft rule change + draft news post
+  A->>R: Approve rule version v+1 with effective date
+  A->>N: Publish rule-change post
+  Note over R: Predictor uses v+1 for claims<br/>with dates on or after the effective date
+  L->>S: Units used per authorization
+  S->>S: Forecast run-out date
+  S->>N: Auth alert to scheduler

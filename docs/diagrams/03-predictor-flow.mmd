@@ -1,0 +1,20 @@
+sequenceDiagram
+  autonumber
+  participant B as Biller
+  participant P as Predictor
+  participant L as Claim ledger
+  participant R as Rule table
+  participant E as EVV + auths
+  participant M as LLM (Haiku)
+
+  B->>P: Run pre-check on batch
+  P->>P: Clean + normalise fields
+  P->>R: Rules for this payer, valid on the date of service
+  P->>E: Verified visits + matching authorization
+  P->>L: Units left on auth, earlier claims same visit / same day
+  P->>P: Rule engine: D01 to D09 checks
+  P->>M: Claim + computed facts + payer rules
+  M-->>P: Fuzzy-rule verdict (D04 / D10), plain-English reason, cited rule
+  P->>P: Combine results, pick the code the payer would report
+  P->>P: Classify fix: data / process / not fixable
+  P-->>B: Pass / at risk + code + reason + suggested fix

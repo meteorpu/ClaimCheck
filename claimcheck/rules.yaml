@@ -1,0 +1,82 @@
+# RULE TABLE: approved, versioned payer rules.
+#
+# Each rule names its source document so a reviewer can check it, and carries
+# effective dates so a claim is judged on the rules in force on its date of service.
+#
+# How this was made: Claude read each manual + bulletin and drafted the rules;
+# a human (me) checked each one against the source and against claims_history.csv.
+# Rules marked `source: inferred from claims history` are NOT in any manual: they
+# were found by analysing denial remarks, and should be confirmed with the payer.
+
+version: 1
+approved_by: analyst
+approved_on: 2026-11-26
+
+unit_minutes: 15
+
+# Synonyms seen in the exports, mapped to the payer ID.
+payer_aliases:
+  PY01: [PY01, NORTHWIND HP, Northwind Health Plan]
+  PY02: [PY02, Harbor Medicaid Plan, Harbor Medicaid]
+  PY03: [PY03, SUMMIT CARE, Summit Care Partners]
+
+payers:
+  PY01:
+    name: Northwind Health Plan
+    rounding: eight_minute_rule          # 8+ leftover minutes = one more unit
+    rounding_source: "PY01 manual 4.3"
+    evv_required: true                    # manual 4.2
+    auth_required: true                   # manual 4.5
+    timely_filing:
+      - {days: 30, dos_from: null,       dos_to: 2026-07-31, source: "PY01 manual 6.1"}
+      - {days: 45, dos_from: 2026-08-01, dos_to: null,       source: "PY01 bulletin 2026-07"}
+    daily_max_units: null
+    modifiers: []
+    contract_rules: []
+
+  PY02:
+    name: Harbor Medicaid Plan
+    rounding: whole_units_only            # partial units not billable
+    rounding_source: "PY02 guide: Visit verification"
+    evv_required: true
+    auth_required: true
+    timely_filing: []                     # "no timely filing limit for in-state HCBS"
+    daily_max_units: {units: 32, scope: all_services, source: "PY02 guide: Daily maximum"}
+    modifiers:
+      - service: T1019
+        required: U2
+        dos_from: null
+        dos_to: 2026-08-31
+        source: "PY02 guide: Modifiers"
+      - service: T1019
+        required: U2
+        weekdays_only: true
+        dos_from: 2026-09-01
+        dos_to: null
+        source: "PY02 guide: Modifiers + bulletin 2026-08"
+      - service: T1019
+        required: U3
+        weekends_only: true
+        dos_from: 2026-09-01
+        dos_to: null
+        source: "PY02 bulletin 2026-08 (weekend differential)"
+    contract_rules: []
+
+  PY03:
+    name: Summit Care Partners
+    rounding: whole_units_only
+    rounding_source: "PY03 handbook 9.1"
+    evv_required: true
+    auth_required: true
+    timely_filing:
+      - {days: 60, dos_from: null, dos_to: null, source: "PY03 handbook 9.3"}
+    daily_max_units: null
+    modifiers: []
+    contract_rules:
+      - id: whole_hours
+        description: "Contract amendment 3: services must be billed in whole hours (units in multiples of 4)"
+        units_multiple_of: 4
+        dos_from: 2026-07-01
+        dos_to: null
+        denial_code: D10
+        source: "inferred from claims history (D10 remarks); handbook 9.5 says contract rules may apply"

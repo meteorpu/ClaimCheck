@@ -1,0 +1,16 @@
+flowchart LR
+  subgraph BILLER["Biller"]
+    B1["Worklist: green / amber / red"] --> B2["Open claim: reason + cited rule"]
+    B2 --> B3["Review proposed fix, approve"]
+    B3 --> B4["Submit batch"]
+  end
+  subgraph COORD["Care coordinator / scheduler"]
+    C1["Task: verify EVV visit V123"]
+    C2["Alert: PT0026 auth runs out 12 Nov,<br/>adjust schedule or request more units"]
+  end
+  subgraph MGR["Billing manager"]
+    M1["Trend view: denial rate by payer"]
+    M2["News board: rule changes,<br/>trends, auth alerts"]
+  end
+  B2 -- "process fix" --> C1
+  M2 -. "relevant post shown in context" .-> B2

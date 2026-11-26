@@ -1,0 +1,66 @@
+flowchart TB
+  subgraph SRC["Data sources"]
+    EVV[("EVV visits")]
+    AUTH[("Authorizations")]
+    DOCS[("Payer manuals + bulletins")]
+    PORTALS[("Payer portal registry")]
+  end
+
+  subgraph RULES["Rule pipeline"]
+    EXTRACT["LLM rule extractor"]
+    APPROVE{{"Analyst approves"}}
+    RT[("RULE TABLE<br/>versioned, effective dates,<br/>source cited")]
+  end
+
+  subgraph LEDGER_BOX["Shared state"]
+    LEDGER[("CLAIM LEDGER<br/>claims + status,<br/>auth balances,<br/>claim groups")]
+  end
+
+  subgraph PRED["PREDICTOR (batch: each claim in submission order)"]
+    WRITER["Writing assistant<br/>drafts claim from EVV"]
+    CLEAN["Clean + normalise"]
+    ENGINE["Rule engine"]
+    FUZZY["LLM: fuzzy rules +<br/>explanation"]
+    FIX["Fix classifier"]
+    AGENT["Autofix agent"]
+  end
+
+  subgraph MON["MONITOR (scheduled)"]
+    STATS["Trend + burn-rate stats"]
+    WATCH["Portal watcher"]
+    EXPLAIN["LLM: explain cause,<br/>draft rule change + news"]
+  end
+
+  subgraph UI["Provider app"]
+    WORK["Billing worklist"]
+    NEWS["News board"]
+    SCHED["Scheduler alerts"]
+  end
+
+  EVV --> WRITER --> CLEAN
+  DOCS --> EXTRACT --> APPROVE --> RT
+  CLEAN --> ENGINE --> FUZZY --> FIX -- "results table" --> WORK
+  FIX -. data fix .-> AGENT -. proposed diff .-> WORK
+  AUTH --> ENGINE
+  EVV --> ENGINE
+  RT --> ENGINE
+  RT --> FUZZY
+  LEDGER --> ENGINE
+  WORK -- "approved + submitted" --> LEDGER
+  LEDGER -- "paid / denied outcomes" --> STATS
+  PORTALS -.-> WATCH -.-> EXPLAIN
+  STATS --> EXPLAIN
+  EXPLAIN -. draft rule .-> APPROVE
+  EXPLAIN --> NEWS
+  STATS --> SCHED
+
+  classDef code fill:#e3f1e6,stroke:#4c8a5a;
+  classDef ai fill:#ece6f7,stroke:#7a5bb5;
+  classDef human fill:#fdf0d8,stroke:#c48a1a;
+  classDef store fill:#fff,stroke:#3a6ea5,stroke-width:2px;
+  classDef future fill:#f6f6f6,stroke:#888,stroke-dasharray:5 4,color:#555;
+  class CLEAN,ENGINE,FIX,STATS code;
+  class EXTRACT,FUZZY,EXPLAIN ai;
+  class APPROVE human;
+  class RT,LEDGER,EVV,AUTH,DOCS store;
+  class WRITER,AGENT,WATCH,PORTALS,NEWS,SCHED future;

@@ -1,0 +1,17 @@
+stateDiagram-v2
+  [*] --> Drafted: writing assistant or biller
+  Drafted --> Checked: predictor
+  Checked --> Ready: predicted pay
+  Checked --> AtRisk: predicted deny
+  AtRisk --> FixProposed: autofix agent (data fix)
+  FixProposed --> Checked: biller approves, re-check
+  AtRisk --> OnHold: process fix routed
+  OnHold --> Checked: EVV fixed / new auth
+  AtRisk --> WrittenOff: not fixable
+  Ready --> Submitted: units reserved on auth
+  Submitted --> Paid: units drawn down
+  Submitted --> Denied: units released
+  Denied --> Corrected: frequency code 7 + original ID
+  Corrected --> Submitted
+  Paid --> [*]
+  WrittenOff --> [*]

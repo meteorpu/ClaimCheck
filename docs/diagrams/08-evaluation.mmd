@@ -1,0 +1,7 @@
+flowchart LR
+  H[("claims_history.csv<br/>~3,800 with outcomes")] --> SPLIT["Run the same pipeline,<br/>outcome hidden"]
+  SPLIT --> CMP["Compare prediction vs actual"]
+  CMP --> MET["Pay/deny accuracy,<br/>precision + recall on denials,<br/>accuracy per denial code,<br/>confusion matrix"]
+  MET --> ERR["Inspect errors:<br/>missing rule? data issue? LLM mistake?"]
+  ERR -- "fix rule / prompt" --> SPLIT
+  MET --> OUT["Run on claims_to_check.csv<br/>predictions.csv"]

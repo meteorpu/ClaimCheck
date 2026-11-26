@@ -1,0 +1,12 @@
+{
+ "rule_version": 1,
+ "documents": {
+  "billing_basics.md": "445b8e268fdf45a1",
+  "denial_codes.md": "ca7b1cc1961458cc",
+  "PY01_northwind_bulletin_2026-07.md": "495bf0edb0e88c8b",
+  "PY01_northwind_provider_manual.md": "bd7c19d8cd419325",
+  "PY02_harbor_bulletin_2026-08.md": "3fa73a4429a8a3b1",
+  "PY02_harbor_provider_manual.md": "804d09485aa9ef59",
+  "PY03_summit_provider_manual.md": "822ab41e8d9e2fb6"
+ }
+}

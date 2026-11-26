@@ -1,0 +1,10 @@
+.env
+.venv/
+__pycache__/
+.DS_Store
+*.pyc
+output/llm_cache.json
+output/llm_briefings.json
+.pytest_cache/
+output/suggestion_board.json
+output/monitor_report.json

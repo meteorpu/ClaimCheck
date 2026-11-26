@@ -1,0 +1,19 @@
+flowchart TD
+  A["Claim predicted to be denied"] --> B{"What kind of fix?"}
+  B -->|"Data fix<br/>D04 modifier, D07 missing auth no.,<br/>D09 units above EVV, typos"| C["Autofix agent proposes edit<br/>using values from existing records only"]
+  C --> D{{"Biller reviews the diff"}}
+  D -->|approve| E["Claim updated, re-checked"]
+  D -->|reject| F["Biller edits manually"]
+  E --> G["Submit, frequency code 1"]
+  B -->|"Process fix<br/>D01 EVV not verified,<br/>D02 auth used up, D08 wrong / expired auth"| H["Route to the right person<br/>coordinator: fix EVV record<br/>auth team: request new auth"]
+  H --> I["Claim held until resolved,<br/>then re-checked"]
+  B -->|"Not fixable<br/>D03 past filing limit, D05 true duplicate"| J["Flag: write off, appeal,<br/>or drop duplicate"]
+
+  K["Guardrail: agent may never invent an<br/>auth number or raise units"] -.- C
+
+  classDef human fill:#fdf0d8,stroke:#c48a1a;
+  classDef ai fill:#ece6f7,stroke:#7a5bb5;
+  classDef warn fill:#fde4e4,stroke:#c44;
+  class D human;
+  class C ai;
+  class K warn;
